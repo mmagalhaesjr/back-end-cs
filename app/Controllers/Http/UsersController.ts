@@ -14,6 +14,7 @@ export default class UsersController {
       const user = await UserService.show(id)
       response.send(user)
     } catch (error) {
+      if (error.message === 'User not found') return response.status(404).send(error.message)
       response.status(500)
     }
   }
