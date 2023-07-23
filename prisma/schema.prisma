@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model classrooms {
+  id          Int           @id @default(autoincrement())
+  room_number Int
+  capacity    Int
+  available   Boolean
+  owner       Int?
+  created_at  DateTime?     @default(now()) @db.Timestamp(6)
+  updated_at  DateTime?     @default(now()) @db.Timestamp(6)
+  users       users?        @relation(fields: [owner], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_owner")
+  enrollments enrollments[]
+}
+
+model enrollments {
+  id           Int        @id @default(autoincrement())
+  student_id   Int
+  classroom_id Int
+  created_at   DateTime?  @default(now()) @db.Timestamp(6)
+  updated_at   DateTime?  @default(now()) @db.Timestamp(6)
+  classrooms   classrooms @relation(fields: [classroom_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_classroom")
+  users        users      @relation(fields: [student_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_student")
+
+  @@unique([student_id, classroom_id], map: "unique_student_classroom_combination")
+}
+
+model users {
+  id                  Int           @id @default(autoincrement())
+  name                String
+  email               String        @unique
+  registration_number Int           @unique
+  dob                 DateTime      @db.Date
+  professor           Boolean
+  student             Boolean
+  created_at          DateTime?     @default(now()) @db.Timestamp(6)
+  updated_at          DateTime?     @default(now()) @db.Timestamp(6)
+  classrooms          classrooms[]
+  enrollments         enrollments[]
+}
