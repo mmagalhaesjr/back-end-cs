@@ -1,6 +1,20 @@
 import prisma from 'Config/database'
+import { UserData } from 'App/Protocols'
 
-export async function show(id: number) {
+export async function store({
+  name,
+  email,
+  registration_number,
+  dob,
+  professor,
+  student,
+}: UserData) {
+  return await prisma.users.create({
+    data: { name, email, registration_number, dob: new Date(dob), professor, student },
+  })
+}
+
+export async function showById(id: number) {
   return await prisma.users.findUnique({
     where: {
       id,
@@ -14,8 +28,35 @@ export async function show(id: number) {
   })
 }
 
-const UserRepository = {
-  show,
+export async function showByRegistratioNumber(registration_number: number) {
+  return await prisma.users.findUnique({
+    where: {
+      registration_number,
+    },
+  })
 }
 
-export default UserRepository;
+export async function showByEmail(email: string) {
+  return await prisma.users.findUnique({
+    where: {
+      email,
+    },
+  })
+}
+
+export async function destroy(id: number) {
+  return await prisma.users.delete({
+    where: {
+      id,
+    },
+  })
+}
+
+const UserRepository = {
+  showById,
+  showByEmail,
+  store,
+  showByRegistratioNumber,
+}
+
+export default UserRepository

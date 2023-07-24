@@ -1,10 +1,18 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import UserService from 'App/Services/UsersService'
-import prisma from 'Config/database'
+import { UserData } from 'App/Protocols'
 
 export default class UsersController {
-  public async store({ }: HttpContextContract) {
-    return { ok: 'store' }
+  public async store({ request, response }: HttpContextContract) {
+    const data = request.body() as UserData
+
+    try {
+      const user = await UserService.store(data)
+      response.status(201).send(user)
+    } catch (error) {
+      if (error.message === 'User already exists') return response.status(409).send(error.message)
+      response.status(500)
+    }
   }
 
   public async show({ request, response }: HttpContextContract) {
