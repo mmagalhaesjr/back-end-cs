@@ -19,12 +19,6 @@ export async function showById(id: number) {
     where: {
       id,
     },
-    select: {
-      name: true,
-      email: true,
-      registration_number: true,
-      dob: true,
-    },
   })
 }
 
