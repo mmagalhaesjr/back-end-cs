@@ -5,4 +5,4 @@ Route.group(() => {
   Route.get('/:id', 'ClassroomsController.show')
   Route.put('/:id', 'ClassroomsController.update')
   Route.delete('/:id', 'ClassroomsController.destroy')
-}).prefix('/classroom')
+}).prefix('/api/classroom')

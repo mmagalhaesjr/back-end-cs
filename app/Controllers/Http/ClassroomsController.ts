@@ -38,7 +38,7 @@ export default class ClassroomsController {
     } catch (error) {
       if (error.message === 'Classroom not found') return response.status(404).send(error.message)
       if (error.message === 'Conflict Error') return response.status(409).send(error.message)
-      if (error.message === 'Unauthorized! Only professors are allowed to create a classroom') return response.status(401).send(error.message)
+      if (error.message === 'Unauthorized! The owner must be a professor') return response.status(401).send(error.message)
       response.status(500)
     }
   }
@@ -48,7 +48,7 @@ export default class ClassroomsController {
 
     try {
       await ClassroomsService.destroy(id)
-      response.status(204)
+      response.status(204).send('Classroom deleted')
     } catch (error) {
       if (error.message === 'Classroom not found') return response.status(404).send(error.message)
       response.status(500)

@@ -30,7 +30,7 @@ export async function update(id: number, data: ClassroomData) {
   }
   if (classroom.owner !== data.owner) {
     const owner = await UserRepository.showById(data.owner)
-    if (!owner || !owner.professor) throw new Error('Unauthorized! Only professors are allowed to create a classroom')
+    if (!owner || !owner.professor) throw new Error('Unauthorized! The owner must be a professor')
   }
 
   return await ClassroomsRepository.update(id, data)

@@ -40,12 +40,22 @@ export async function destroy(id: number) {
   })
 }
 
+export async function showClassEnrolments(classroom_id: number) {
+  return await prisma.classrooms.findUnique({
+    where: {
+      id: classroom_id,
+    },
+    include: { enrollments: true },
+  })
+}
+
 const ClassroomsRepository = {
   showById,
   showByRoomNumber,
   store,
   update,
   destroy,
+  showClassEnrolments
 }
 
 export default ClassroomsRepository
