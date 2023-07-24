@@ -31,7 +31,15 @@ export default class UsersController {
     return { ok: 'update' }
   }
 
-  public async destroy({ }: HttpContextContract) {
-    return { ok: 'destroy' }
+  public async destroy({ request, response }: HttpContextContract) {
+    const { id } = request.params()
+
+    try {
+      await UserService.destroy(id)
+      response.status(204)
+    } catch (error) {
+      if (error.message === 'User not found') return response.status(404).send(error.message)
+      response.status(500)
+    }
   }
 }

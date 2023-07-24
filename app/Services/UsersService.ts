@@ -17,9 +17,17 @@ export async function show(id: number) {
   return user
 }
 
+export async function destroy(id: number) {
+  const user = await UserRepository.showById(id)
+  if (!user) throw new Error('User not found')
+
+  await UserRepository.destroy(id)
+}
+
 const UserService = {
   show,
-  store
+  store,
+  destroy,
 }
 
 export default UserService

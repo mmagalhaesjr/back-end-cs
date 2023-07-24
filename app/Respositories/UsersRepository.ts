@@ -45,7 +45,7 @@ export async function showByEmail(email: string) {
 }
 
 export async function destroy(id: number) {
-  return await prisma.users.delete({
+  await prisma.users.delete({
     where: {
       id,
     },
@@ -57,6 +57,7 @@ const UserRepository = {
   showByEmail,
   store,
   showByRegistratioNumber,
+  destroy,
 }
 
 export default UserRepository
