@@ -27,8 +27,18 @@ export default class UsersController {
     }
   }
 
-  public async update({ }: HttpContextContract) {
-    return { ok: 'update' }
+  public async update({ request, response }: HttpContextContract) {
+    const { id } = request.params()
+    const data = request.body() as UserData
+
+    try {
+      const userUpdated = await UserService.update(id, data)
+      response.status(200).send(userUpdated)
+    } catch (error) {
+      if (error.message === 'User not found') return response.status(404).send(error.message)
+      if (error.message === 'Conflict Error') return response.status(409).send(error.message)
+      response.status(500)
+    }
   }
 
   public async destroy({ request, response }: HttpContextContract) {

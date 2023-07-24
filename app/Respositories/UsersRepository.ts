@@ -44,6 +44,26 @@ export async function showByEmail(email: string) {
   })
 }
 
+async function update(
+  id: number,
+  { name, email, registration_number, dob, professor, student }: UserData
+) {
+  return prisma.users.update({
+    where: {
+      id: id,
+    },
+    data: {
+      name,
+      email,
+      registration_number,
+      dob: new Date(dob),
+      professor,
+      student,
+      updated_at: new Date(),
+    },
+  })
+}
+
 export async function destroy(id: number) {
   await prisma.users.delete({
     where: {
@@ -57,6 +77,7 @@ const UserRepository = {
   showByEmail,
   store,
   showByRegistratioNumber,
+  update,
   destroy,
 }
 
