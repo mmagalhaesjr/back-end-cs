@@ -4,6 +4,12 @@ import ClassroomsService from 'App/Services/ClassroomsService'
 
 export default class ClassroomsController {
   public async store({ request, response }: HttpContextContract) {
+    const user = request.user
+
+    if (!user?.professor)
+      return response
+        .status(401)
+        .send('Unauthorized! Only professors are allowed to create a classroom')
     const data = request.body() as ClassroomData
 
     try {

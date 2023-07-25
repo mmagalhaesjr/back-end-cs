@@ -2,11 +2,15 @@ import EnrollmentsRepository from 'App/Respositories/EnrollmentsRepository'
 import { EnrollmentData } from 'App/Protocols'
 import ClassroomsRepository from '../Respositories/ClassroomsRepository';
 import UserRepository from 'App/Respositories/UsersRepository';
+import { users } from '@prisma/client';
 
-export async function store({ student_id, classroom_id }: EnrollmentData) {
+export async function store({ student_id, classroom_id }: EnrollmentData, user: users) {
   const enrollment = await EnrollmentsRepository.show({ student_id, classroom_id })
 
   if (enrollment) throw new Error('Student already enrolled in this class')
+
+  const student = await UserRepository.showById(student_id)
+  if (!student) throw new Error('Student not found')
 
   const classEnrollments = await ClassroomsRepository.showClassEnrolments(classroom_id)
 
@@ -17,6 +21,8 @@ export async function store({ student_id, classroom_id }: EnrollmentData) {
   if (classEnrollments.capacity <= classEnrollments.enrollments.length) {
     throw new Error('Classroom capacity exceeded')
   }
+
+  if (classEnrollments.owner !== Number(user.id)) throw new Error('Only the classroom owner can create ernollment')
 
   return await EnrollmentsRepository.store({ student_id, classroom_id })
 

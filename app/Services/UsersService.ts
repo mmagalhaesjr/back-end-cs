@@ -1,5 +1,7 @@
 import UserRepository from 'App/Respositories/UsersRepository'
 import { UserData } from 'App/Protocols'
+import { v4 as uuid } from 'uuid'
+import AuthRepository from 'App/Respositories/AuthRepository'
 
 export async function store(data: UserData) {
   const user = await UserRepository.showByRegistratioNumber(data.registration_number)
@@ -7,7 +9,13 @@ export async function store(data: UserData) {
 
   if (user || userWithEmail) throw new Error('User already exists')
 
-  return await UserRepository.store(data)
+  const newUser = await UserRepository.store(data)
+
+  const newToken = uuid()
+
+  const token = await AuthRepository.store(newUser.id, newToken)
+
+  return { ...newUser, token: token.token }
 }
 
 export async function show(id: number) {

@@ -4,22 +4,29 @@ import EnrollmentsService from 'App/Services/EnrollmentsService'
 
 export default class EnrollmentsController {
   public async store({ request, response }: HttpContextContract) {
+    const user = request.user
+
+    if (!user?.professor)
+      return response
+        .status(401)
+        .send('Unauthorized! Only professors are allowed to create a classroom')
+
     const data = request.body() as EnrollmentData
 
     try {
-      const classroom = await EnrollmentsService.store(data)
+      const classroom = await EnrollmentsService.store(data, user)
       response.status(201).send(classroom)
     } catch (error) {
       if (error.message === 'Student already enrolled in this class') return response.status(409).send(error.message)
 
       if (
         error.message === 'Classroom not available for enrollment' ||
-        error.message === 'Classroom capacity exceeded'
+        error.message === 'Classroom capacity exceeded' ||  error.message === 'Only the classroom owner can create ernollment'
       ) {
         return response.status(401).send(error.message)
       }
 
-      if (error.message === 'Classroom not found') return response.status(404).send(error.message)
+      if (error.message === 'Classroom not found' || error.message === 'Student not found') return response.status(404).send(error.message)
 
       response.status(500)
     }
